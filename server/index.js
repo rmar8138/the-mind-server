@@ -3,7 +3,6 @@ const app = require("express")();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const { generateCards } = require("./utils");
-const { SHORT_ID_CHARACTERS } = require("./constants");
 
 const port = process.env.PORT || 8000;
 const rooms = {
@@ -16,7 +15,7 @@ server.listen(port, () => console.log(`Server up on port ${port}`));
 
 io.on("connection", function (socket) {
   socket.on("create_room", (payload) => {
-    const roomId = shortid.generate(SHORT_ID_CHARACTERS);
+    const roomId = shortid.generate();
     rooms[roomId] = {
       players: [payload.player],
       gameStarted: false,
