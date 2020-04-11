@@ -1,8 +1,15 @@
 const shortid = require("shortid");
+const cors = require("cors");
 const app = require("express")();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
 const { generateCards } = require("./utils");
+
+const corsOptions = {
+  origin: "https://the-mind.netlify.com/",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 const port = process.env.PORT || 8000;
 const rooms = {
@@ -133,5 +140,9 @@ io.on("connection", function (socket) {
     }
 
     // delete room if no more users?
+    // if (!rooms[room].players.length) {
+    //   delete rooms[room];
+    // }
+    // console.log(rooms);
   });
 });
