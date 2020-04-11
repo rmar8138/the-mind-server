@@ -6,7 +6,7 @@ const io = require("socket.io")(server);
 const { generateCards } = require("./utils");
 
 const corsOptions = {
-  origin: "https://the-mind.netlify.com/",
+  origin: "https://the-mind.netlify.com/*",
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
@@ -79,7 +79,7 @@ io.on("connection", function (socket) {
     // send cards to each player
     io.in(payload.roomId).clients((error, clients) => {
       if (error) {
-        throw new Error(error);
+        console.log(error);
       }
 
       clients.forEach((client, index) => {
@@ -116,13 +116,17 @@ io.on("connection", function (socket) {
   });
 
   socket.on("leave_room", (payload) => {
-    rooms[payload.roomId].players = rooms[payload.roomId].players.filter(
-      (player) => player.id !== socket.id
-    );
-    socket.leave(payload.roomId);
-    io.to(payload.roomId).emit("leave_room", {
-      playerId: socket.id,
-    });
+    try {
+      rooms[payload.roomId].players = rooms[payload.roomId].players.filter(
+        (player) => player.id !== socket.id
+      );
+      socket.leave(payload.roomId);
+      io.to(payload.roomId).emit("leave_room", {
+        playerId: socket.id,
+      });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   });
 
   socket.on("disconnecting", () => {
